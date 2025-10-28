@@ -1,0 +1,178 @@
+* {
+    padding: 0;
+    margin: 0;
+    outline: none;
+    font-family: "Josefin Sans", sans-serif;
+    box-sizing: border-box;
+}
+
+.underline-text {
+    text-decoration: underline !important;
+}
+
+.line-divider {
+  width: 100%;
+  height: 1px;
+  background-color: #EEEEEE;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.w-60 {
+    width: 60%;
+}
+
+.w-50 {
+    width: 50%;
+}
+
+.fw-3 {
+    font-weight: 300;
+}
+
+.fw-6 {
+    font-weight: 600;
+}
+
+.fw-7 {
+    font-weight: 700;
+}
+
+.wrapper {
+    width: 93%;
+    margin: 0 auto;
+}
+
+.fs-12 {
+    font-size: 12px;
+}
+
+.fs-14 {
+    font-size: 14px;
+}
+
+.fs-16 {
+    font-size: 16px !important;
+}
+
+.fs-17 {
+    font-size: 17px;
+}
+
+.fs-18 {
+    font-size: 18px;
+}
+
+.fs-20 {
+    font-size: 20px;
+}
+
+.poppins {
+    font-family: 'Poppins', sans-serif;
+}
+
+.initialized-border {
+    background-color: #AFCFE7 !important;
+}
+
+.rejected-border {
+    background-color: #F6BBBB !important;
+}
+
+.pending-border {
+    background-color: #F6E1BB !important;
+}
+
+.success-border {
+    background-color: #9EE1E1 !important;
+}
+
+.initialized-color {
+    color: #3686C3 !important;
+}
+
+.rejected-color {
+    color: #E85555 !important;
+}
+
+.pending-color {
+    color: #E8B455 !important;
+}
+
+.success-color {
+    color: #0CB4B5 !important;
+}
+
+.canceled-bg-color {
+    background-color: rgba(255, 202, 180, 0.45) !important;
+}
+
+.deleted-bg-color {
+    background-color: rgba(246, 187, 187, 0.6) !important;
+}
+
+.paused-bg-color {
+    background-color: rgba(232, 180, 85, 0.15) !important;
+}
+
+.available-bg-color {
+    background-color: rgba(12, 180, 181, 0.15) !important;
+}
+
+.br-4 {
+    border-radius: 4px !important;
+}
+
+.br-none {
+    border-radius: none !important;
+}
+
+.br-10 {
+    border-radius: 10px !important;
+}
+
+.br-20 {
+    border-radius: 20px !important;
+}
+
+@media screen and (max-width: 1050px) {
+    .wrapper {
+        width: 95%;
+        max-width: none;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .wrapper {
+        width: 90%;
+        max-width: none;
+    }
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.content-container {
+  //min-height: calc(100vh - 90px - 2.5rem - 20px);
+  margin-top: 10px;
+  min-height: calc(100vh - 90px - 50px);
+}
+.detail_pages-container {
+    min-height: calc(100vh - 90px - 80px);
+}
+
+.cellWidth-300 {
+    width: 300px;
+    max-width: 300px;
+}
+.cellWidth-200 {
+    width: 200px;
+    max-width: 200px;
+}
+.cellWidth-100 {
+    width: 100px !important;
+    max-width: 100px !important;
+}
