@@ -14,8 +14,8 @@ export const useUiStore = defineStore('ui', () => {
     isNavMini.value = !isNavMini.value
   }
 
-  const handleAppLoading = () => {
-    isAppLoading.value = !isAppLoading.value
+  const handleAppLoading = (value: boolean) => {
+    isAppLoading.value = value
   }
 
   return { isNavOpen, handleNav, isNavMini, handleNavMini, isAppLoading, handleAppLoading }

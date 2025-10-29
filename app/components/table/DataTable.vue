@@ -1,7 +1,6 @@
 <template>
   <v-data-table
     v-bind="$attrs"
-    v-on="$listeners"
     :headers="headers"
     :items="items"
     :hide-default-header="hideDefaultTableHeader"
@@ -13,16 +12,6 @@
     class="elevation-0"
     @click:row="rowClicked"
   >
-    <template
-      v-for="(_, scopedSlotName) in $scopedSlots"
-      #[scopedSlotName]="slotData"
-    >
-      <slot :name="scopedSlotName" v-bind="slotData" />
-    </template>
-
-    <template v-for="(_, slotName) in $slots" #[slotName]>
-      <slot :name="slotName" />
-    </template>
     <template #top="{ pagination, options, updateOptions }">
       <!-- Here is the custom header of the table -->
       <slot
@@ -34,58 +23,38 @@
       <slot name="componentDelete" />
     </template>
 
-    <template #[`item.status`]="{ item }">
-      <!-- let add chip styeles in a specific data in every item -->
-      <slot name="chipStatus" :item="item" />
+    <template v-for="header in headers" #[`item.${header.key}`]="{ item }">
+      <slot :name="header.title" :item="item">
+        {{ item[header.title] }}
+      </slot>
     </template>
 
-    <template #[`item.actions`]="{ item, index }">
-      <!-- Let add a menu in every item -->
-      <ActionsMenu :item="item" :index="index" />
+    <template #no-data>
+      <div class="text-center py-6">NO HAY DATOS DISPONIBLES</div>
     </template>
   </v-data-table>
 </template>
 
-<script>
-export default {
-  name: "DataTable",
-  props: {
-    headers: {
-      type: Array,
-      required: true,
-    },
-    items: {
-      type: Array,
-      required: true,
-    },
-    hideDefaultTableHeader: {
-      type: Boolean,
-      default: true,
-    },
-    quantityPerPage: {
-      type: Number,
-      default: 30,
-    },
-    sortOptions: {
-      type: Object,
-      default: () => {
-        return {
-          sortBy: "",
-          sortDesc: false,
-        };
-      },
-    },
-    search: {
-      type: String,
-      default: "",
-    },
-  },
-  methods: {
-    rowClicked(item, rowData) {
-      this.$emit("rowClicked", item, rowData);
-    },
-  },
-};
+<script setup lang="ts">
+import type { TableEmits, TableProps } from '~/types/Table'
+
+const props = withDefaults(defineProps<TableProps>(), {
+  headers: () => [],
+  items: () => [],
+  hideDefaultTableHeader: true,
+  quantityPerPage: 30,
+  sortOptions: () => ({
+    sortBy: '',
+    sortDesc: false,
+  }),
+  search: '',
+})
+
+const emit = defineEmits<TableEmits>()
+
+const rowClicked = (item: any, rowData: any) => {
+  emit('rowClicked', item, rowData)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -114,8 +83,11 @@ export default {
           border-bottom: $border;
           border-top: $border;
           // &:first-child {
-          //   border-radius: 10px; 
+          //   border-radius: 10px;
           // }
+          &:first-child {
+            padding-left: 0px !important;
+          }
           &:last-child {
             border-right: $border;
           }

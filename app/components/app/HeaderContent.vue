@@ -2,32 +2,30 @@
   <div class="w-100 d-flex flex-row justify-between align-center">
     <v-container>
       <v-row>
-        <v-col cols="10" sm="8" md="4">
+        <v-col cols="4">
           <v-text-field
             v-model="searchData"
             placeholder="Buscar..."
-            height="56px"
-            solo
-            background-color="bgsearch"
-            append-icon="$search"
-            flat
-            hide-details
+            variant="solo-filled"
             clearable
-            class="text-subtitle-1 font-weight-medium rounded-pill"
-            @click:append="headerSearch"
-            @click:clear="clearSearch"
-            @keyup.enter="headerSearch"
-          />
+            background-color="lightGrey"
+            hide-details
+            density="comfortable"
+            class="search-input"
+            @keyup.enter="provideTitle"
+            @click:clear="deleteFilter"
+          >
+            <template #append-inner>
+              <v-icon color="ultraLightGrey" @click="provideTitle">$search</v-icon>
+            </template>
+          </v-text-field>
         </v-col>
       </v-row>
     </v-container>
+
     <v-spacer />
-    <v-btn
-      color="transparent"
-      elevation="0"
-      fab
-      @click.stop="logout"
-    >
+
+    <v-btn color="transparent" elevation="0" @click.stop="logout">
       <v-icon class="ml-2" size="26">$exit</v-icon>
     </v-btn>
   </div>
@@ -36,29 +34,25 @@
 <script setup lang="ts">
 const searchData = ref<string>('')
 
-const headerSearch = () => {
-  console.log('headerSearch')
-}
-
-const clearSearch = () => {
-  searchData.value = ''
-}
-
-const logout = () => {
-  console.log('logout')
-}
+const provideTitle = () => console.log('headerSearch')
+const deleteFilter = () => (searchData.value = '')
+const logout = () => console.log('logout')
 </script>
 
 <style lang="scss" scoped>
-.sm_and_up-width {
-  min-width: 378px;
-}
-.xs_only-width {
-  width: 220px;
-}
-::v-deep {
-  .v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot, .v-text-field.v-text-field--enclosed .v-text-field__details {
-    padding: 0 24px;
+.search-input {
+  border-radius: 100px !important;
+  overflow: hidden;
+
+  .v-field__field {
+    border-radius: 100px !important;
+  }
+
+  // Cambiar color de fondo al hacer focus
+  &:focus-within .v-field__overlay {
+    background-color: #ff0000 !important; // o usa tu variable SCSS
+    opacity: 1 !important;
   }
 }
+
 </style>

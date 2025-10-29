@@ -8,12 +8,12 @@ export default defineNuxtRouteMiddleware((to) => {
     auth.token = localStorage.getItem('auth_token') || null
   }
 
-  const protectedRoutes = ['/mi-cuenta', '/pedidos', '/perfil']
+  const protectedRoutes = ['/mis-reservas', '/reservas']
   if (protectedRoutes.includes(to.path) && !auth.token) {
-    return navigateTo('/iniciar-sesion')
+    return navigateTo('/login')
   }
 
-  const guestRoutes = ['/iniciar-sesion', '/registro']
+  const guestRoutes = ['/login', '/register']
   if (guestRoutes.includes(to.path) && auth.token) {
     return navigateTo('/')
   }
