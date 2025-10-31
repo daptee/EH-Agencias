@@ -123,8 +123,8 @@
                 :chipClass="[
                   'fs-12 font-weight-bold',
                   item?.ESTADO === 'F' || item?.ESTADO === 'R'
-                    ? 'yellowPending'
-                    : 'secondary',
+                    ? 'yellowPendingChip'
+                    : 'secondaryChip',
                 ]"
               >
                 <template #content>
@@ -197,20 +197,13 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.brder {
-  width: 4px;
-  height: 58px;
-  border-end-start-radius: 10px;
-  border-start-start-radius: 10px;
-}
-
-.yellowPending {
+.yellowPendingChip {
   background-color: rgba($yellowPending, 0.15);
   color: rgba($yellowPending, 0.8);
   font-size: 12px !important;
 }
 
-.secondary {
+.secondaryChip {
   background-color: rgba($secondary, 0.15);
   color: rgba($secondary, 0.8);
   font-size: 12px !important;

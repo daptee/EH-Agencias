@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 export const useUiStore = defineStore('ui', () => {
   const isNavOpen = ref<boolean>(true)
-  const isNavMini = ref<boolean>(true)
+  const isNavMini = ref<boolean>(false)
   const isAppLoading = ref<boolean>(false)
 
   const handleNav = () => {
@@ -18,5 +18,12 @@ export const useUiStore = defineStore('ui', () => {
     isAppLoading.value = value
   }
 
-  return { isNavOpen, handleNav, isNavMini, handleNavMini, isAppLoading, handleAppLoading }
+  return {
+    isNavOpen,
+    handleNav,
+    isNavMini,
+    handleNavMini,
+    isAppLoading,
+    handleAppLoading,
+  }
 })

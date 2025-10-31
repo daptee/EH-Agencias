@@ -1,6 +1,6 @@
 interface LoginResponse {
   message: string
-  token?: string | null
+  access_token?: string | null
 }
 
 interface RegisterResponse {

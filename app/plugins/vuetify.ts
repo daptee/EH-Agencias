@@ -3,14 +3,24 @@ import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
+import '@mdi/font/css/materialdesignicons.css'
 import ArrowBack from '~/components/icons/ArrowBack.vue'
 import ArrowBig from '~/components/icons/ArrowBig.vue'
 import BulletPointConfirmed from '~/components/icons/BulletPointConfirmed.vue'
 import BulletPointPending from '~/components/icons/BulletPointPending.vue'
 import BulletPointRejected from '~/components/icons/BulletPointRejected.vue'
+import Date from '~/components/icons/Date.vue'
 import Exit from '~/components/icons/Exit.vue'
+import Info from '~/components/icons/Info.vue'
 import MenuHamb from '~/components/icons/MenuHamb.vue'
 import SearchIcon from '~/components/icons/Search.vue'
+import ServiceCheck from '~/components/icons/ServiceCheck.vue'
+import Email from '~/components/icons/Email.vue'
+import Wsp from '~/components/icons/Wsp.vue'
+import EH from '~/components/icons/EH.vue'
+import Minus from '~/components/icons/Minus.vue'
+import Plus from '~/components/icons/Plus.vue'
+import ArrowBackModal from '~/components/icons/ArrowBackModal.vue'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
@@ -28,6 +38,15 @@ export default defineNuxtPlugin((nuxtApp) => {
         bullet_point_confirmed: BulletPointConfirmed,
         bullet_point_pending: BulletPointPending,
         bullet_point_rejected: BulletPointRejected,
+        info: Info,
+        service_check: ServiceCheck,
+        date: Date,
+        email: Email,
+        wsp: Wsp,
+        eh_logo: EH,
+        minus: Minus,
+        plus: Plus,
+        arrow_back_modal: ArrowBackModal,
       },
       sets: { mdi },
     },

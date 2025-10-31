@@ -10,7 +10,7 @@
     :sort-desc="sortOptions.sortDesc"
     :search="search"
     class="elevation-0"
-    @click:row="rowClicked"
+    @click:row="canBeClicked ? rowClicked : null"
   >
     <template #top="{ pagination, options, updateOptions }">
       <!-- Here is the custom header of the table -->
@@ -48,6 +48,7 @@ const props = withDefaults(defineProps<TableProps>(), {
     sortDesc: false,
   }),
   search: '',
+  canBeClicked: true,
 })
 
 const emit = defineEmits<TableEmits>()

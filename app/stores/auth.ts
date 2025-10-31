@@ -34,10 +34,10 @@ export const useAuthStore = defineStore('auth', () => {
   const setLogin = async (params: { email: string; password: string }) => {
     try {
       const response = await login(params)
+      
+      if (!response.access_token) throw new Error(response.message)
 
-      if (!response.token) throw new Error(response.message)
-
-      token.value = response.token
+      token.value = response.access_token
 
       setStoreLoggedUser(token.value)
 
@@ -74,8 +74,13 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const setStoreLoggedUser = (token: string) => {
+    
     const decoded = jwtDecode<User>(token)
     user.value = decoded
+
+    
+    console.log('token', token);
+    console.log('decoded', decoded);
 
     localStorage.setItem('auth_token', token)
     localStorage.setItem('auth_user', JSON.stringify(user.value))
