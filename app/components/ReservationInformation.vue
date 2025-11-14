@@ -25,7 +25,7 @@
 
       <v-row class="ma-0 row-price">
         <span class="price-span">{{ props.price }}</span>
-        <span class="price-text-span">ARG</span>
+        <span class="price-text-span">USD</span>
       </v-row>
     </section>
   </v-card>

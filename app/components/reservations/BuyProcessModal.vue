@@ -110,7 +110,11 @@ const validateCurrentStep = async () => {
 
     nextStep()
   } else {
-    handleFinishBuyProcess()
+    const ok = await handleFinishBuyProcess()
+
+    if (!ok) return
+
+    nextStep()
   }
 }
 
@@ -139,7 +143,7 @@ const handleFinishBuyProcess = async () => {
     TELEFONO_CONTACTO: props.reservationData.personalData.phone,
     EMAIL_CONTACTO: props.reservationData.personalData.email,
     EMAIL_NOTIFICACIONES: props.reservationData.personalData.email,
-    VOL_ORDEN: undefined,
+    VOL_ORDEN: '',
     IMPORTE_COBRADO: props.roomData.price,
     IMPORTE_ADICIONAL: undefined,
     TRANSACCION_NRO: undefined,
@@ -163,11 +167,12 @@ const handleFinishBuyProcess = async () => {
     RLOCALIDAD: props.reservationData.residencyData.locality,
     RESTADO: undefined,
     RDOMIC: props.reservationData.residencyData.address,
-    ROSBV: props.reservationData.residencyData.specialComments ?? '',
+    ROBSV: props.reservationData.residencyData.specialComments ?? '',
     pasajeros: props.reservationData.guests.map((g) => ({
       nationality_id: g.country,
-      birthday: g.birthDate,
-      document: g.dni,
+      birthdate: g.birthDate,
+      dni: g.dni,
+      dni_type: '1',
       name: g.name,
     })),
   }
@@ -175,9 +180,11 @@ const handleFinishBuyProcess = async () => {
   try {
     handleAppLoading(true)
     const res = await createReserve(params)
-    showToast(res.message, 'success')
+    showToast('Reserva creada exitosamente', 'success')
+    return true
   } catch (err: any) {
     showToast(err, 'error')
+    return false
   } finally {
     handleAppLoading(false)
   }

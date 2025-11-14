@@ -13,31 +13,9 @@
             <template #tableToolbar="{}">
               <div class="d-flex justify-space-between align-center pt-11 main">
                 <h3 class="primary--text pl-5 fs-16 fw-6 poppins">Reservas</h3>
-                <div
-                  class="d-flex align-center justify-end px-5"
-                  v-if="lastPage"
-                >
-                  <div class="mr-4 fs-16 poppins">
-                    {{ 'Pagina ' + page + ' de ' + lastPage }}
-                  </div>
-                  <Button
-                    icon
-                    withIcon
-                    iconName="mdi-chevron-left"
-                    iconColor="white"
-                    btnClass="primary mr-4"
-                    @click="decreasePage()"
-                    text
-                  /><Button
-                    icon
-                    withIcon
-                    iconName="mdi-chevron-right"
-                    btnClass="primary"
-                    iconColor="white"
-                    @click="increasePage()"
-                    text
-                  />
-                </div>
+                <!-- <div class="d-flex align-center justify-end px-5">
+                  <ToolkitOrder />
+                </div> -->
               </div>
             </template>
 

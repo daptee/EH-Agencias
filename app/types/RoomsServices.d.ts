@@ -26,7 +26,7 @@ export interface CreateReservationRequest {
   TELEFONO_CONTACTO: string
   EMAIL_CONTACTO: string
   EMAIL_NOTIFICACIONES: string
-  VOL_ORDEN?: string
+  VOL_ORDEN: string
   IMPORTE_COBRADO: string
   IMPORTE_ADICIONAL?: string
   TRANSACCION_NRO?: string
@@ -50,7 +50,7 @@ export interface CreateReservationRequest {
   RLOCALIDAD: string
   RESTADO?: string
   RDOMIC: string
-  ROSBV: string
+  ROBSV: string
   pasajeros: Pasajero[]
 }
 
