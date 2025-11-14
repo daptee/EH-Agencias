@@ -4,19 +4,36 @@
       <h3 class="primary--text fw-6">Disponibilidad</h3>
     </v-row>
     <v-row>
-      <span class="primary--text fw-3">
-        Desde 17 de septiembre hasta 17 de octubre
+      <span
+        v-if="
+          props.availabilityCalendarData.dates?.start &&
+          props.availabilityCalendarData.dates?.end
+        "
+        class="primary--text fw-3"
+      >
+        Desde
+        {{
+          formatToDayMonth(
+            props.availabilityCalendarData.dates?.start as string,
+          )
+        }}
+        hasta el
+        {{
+          formatToDayMonth(props.availabilityCalendarData.dates?.end as string)
+        }}
       </span>
+
+      <span v-else>Elige un rango de fecha</span>
     </v-row>
     <v-row>
       <TableDataTable
-        :items="items"
+        :items="props.availableRooms"
         :headers="availableRoomsHeaders"
-        :quantityPerPage="items.length"
+        :quantityPerPage="props.availableRooms.length"
         :can-be-clicked="false"
         mobile-breakpoint="960"
       >
-        <template #HABITACION="{ item }">
+        <template #id="{ item }">
           <section class="d-flex align-center">
             <div
               v-if="$vuetify.display.mdAndUp"
@@ -38,40 +55,30 @@
               ]"
             >
               <figure>
-                <v-img
-                  width="22"
-                  height="22"
-                  :src="
-                    item.ORIGEN_WEB === 'WEB'
-                      ? '/png/eh.png'
-                      : item.ORIGEN_WEB === 'AIRBNB'
-                        ? '/png/airbnb.png'
-                        : '/png/booking.png'
-                  "
-                />
+                <v-img width="22" height="22" :src="'/png/eh.png'" />
               </figure>
               <span class="ml-2 fs-16 dryBrown--text poppins"
-                >Suite {{ item.HABITACION }}</span
+                >Suite {{ item.id }}</span
               >
             </div>
           </section>
         </template>
 
-        <template #CAPACIDAD="{ item }">
+        <template #capacity="{ item }">
           <span class="dryBrown--text mr-2">Capacidad:</span>
-          <span class="primary--text">{{ item.CAPACIDAD }} (cuatro)</span>
+          <span class="primary--text">{{ item.capacity }} (cuatro)</span>
         </template>
 
-        <template #PRECIO="{ item }">
+        <template #price="{ item }">
           <span class="dryBrown--text mr-2">Precio:</span>
-          <span class="primary--text">{{ item.PRECIO }} USD</span>
+          <span class="primary--text">{{ formatPrice(item.price) }} USD</span>
         </template>
 
-        <template #SERVICIOS="{ item }">
+        <template #services="{ item }">
           <ReservationsServices />
         </template>
 
-        <template #INFO="{ item }">
+        <template #info="{ item }">
           <div class="d-flex align-center ga-2">
             <v-icon size="13">$info</v-icon>
             <span class="primary--text underline mr-2">Más info</span>
@@ -80,7 +87,10 @@
 
         <template #RESERVAR="{ item }">
           <ReservationsBuyProcessModal
+            :disabled="props.reservationData.guests.length === 0"
             :reservation-data="props.reservationData"
+            :availabilityCalendarData="props.availabilityCalendarData"
+            :room-data="item"
           />
         </template>
       </TableDataTable>
@@ -92,17 +102,9 @@
 import type { AvailabilityRoomsProps } from '~/types/AvailabilityRooms'
 import { availableRoomsHeaders } from '~/utils/headers'
 
+const { formatToDayMonth } = useDateFormatter()
+const { formatPrice } = usePriceFormatter()
 const props = defineProps<AvailabilityRoomsProps>()
-
-const items = [
-  {
-    ID: 1,
-    CAPACIDAD: 4,
-    HABITACION: '101',
-    PRECIO: 4550,
-    ESTADO: 'N',
-  },
-]
 </script>
 
 <style scoped lang="scss">

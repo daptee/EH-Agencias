@@ -27,8 +27,8 @@
         </v-btn>
       </div>
       <div class="d-flex flex-column pa-4 pa-sm-3 ml-2" v-if="!isNavMini">
-        <p>Administrador</p>
-        <p class="subtitle">eh@boutiquexperience.com</p>
+        <p>{{ user?.first_name }} {{ user?.last_name }}</p>
+        <p class="subtitle">{{ user?.email }}</p>
       </div>
     </div>
     <hr class="divider mt-2 mb-5" />
@@ -41,6 +41,9 @@ import ImgLogoText from '~/assets/img/icons/logo-text.svg'
 import { useUiStore } from '~/stores/app'
 
 const uiStore = useUiStore()
+const auth = useAuthStore()
+const { user } = storeToRefs(auth)
+
 const handleNavMini = uiStore.handleNavMini
 const { isNavMini } = storeToRefs(uiStore)
 </script>

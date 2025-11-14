@@ -1,40 +1,18 @@
-interface LoginResponse {
-  message: string
-  access_token?: string | null
-}
+import type {
+  AgencyResponse,
+  LoginRequest,
+  LoginResponse,
+  LogoutResponse,
+  RegisterResponse,
+} from '~/types/Auth'
 
-interface RegisterResponse {
-  message: string
-  data: {
-    client_type_id: number
-    name: string
-    lastName: string
-    email: string
-    password: string
-    phone: string
-    cuit: string | null
-    status_id: number
-    updated_at: string
-    created_at: string
-    id: number
-    client_type: {
-      id: number
-      name: string
-      created_at: string
-      updated_at: string
-      deleted_at: string | null
-    }
-  }
-  metadaData: any | null
-}
-
-export const login = async (params: { email: string; password: string }) => {
+export const login = async (params: LoginRequest) => {
   const response = ref<LoginResponse>()
 
   try {
     const config = useRuntimeConfig()
     const res: LoginResponse = await $fetch(
-      `${config.public.API_URL}/api/login_super_admin`,
+      `${config.public.API_URL}/api/agency/login`,
       {
         method: 'POST',
         headers: {
@@ -54,6 +32,51 @@ export const login = async (params: { email: string; password: string }) => {
   }
 }
 
+export const logout = async () => {
+  const response = ref<LogoutResponse>()
+  const auth = useAuthStore()
+  const token = auth.token
+
+  try {
+    const config = useRuntimeConfig()
+    const res: LogoutResponse = await $fetch(
+      `${config.public.API_URL}/api/agency/logout`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+
+    response.value = res
+    return res
+  } catch (error: any) {
+    throw error?.data?.message ?? 'Error al cerrar sesión'
+  }
+}
+
+export const verifyAgency = async (agencyCode: string) => {
+  try {
+    const config = useRuntimeConfig()
+
+    const response: AgencyResponse[] = await $fetch(
+      `${config.public.API_URL}/api/internal-api-eh/Agencias?AG=${agencyCode}`,
+      {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      },
+    )
+
+    return response.length ? response[0] : null
+  } catch (error: any) {
+    throw error?.data?.message ?? 'Error al verificar agencia'
+  }
+}
+
 export const register = async (params: {
   email: string
   name: string
@@ -67,7 +90,7 @@ export const register = async (params: {
   try {
     const config = useRuntimeConfig()
     const res: RegisterResponse = await $fetch(
-      `${config.public.API_URL}/auth/register`,
+      `${config.public.API_URL}/api/agency/register`,
       {
         method: 'POST',
         headers: {
@@ -87,7 +110,7 @@ export const register = async (params: {
     response.value = res
     return res
   } catch (error: any) {
-    throw error?.data?.message ?? 'Error al iniciar sesión'
+    throw error?.data?.message ?? 'Error al registrar usuario'
   }
 }
 
@@ -112,6 +135,6 @@ export const forgotPassword = async (params: { email: string }) => {
     response.value = res
     return res
   } catch (error: any) {
-    throw error?.data?.message ?? 'Error al iniciar sesión'
+    throw error?.data?.message ?? 'Error al intentar restablecer la contraseña'
   }
 }

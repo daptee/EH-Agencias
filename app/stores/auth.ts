@@ -1,30 +1,12 @@
 // stores/auth.ts
 import { defineStore } from 'pinia'
-import { login } from '~/services/auth/auth.service'
+import { login, logout } from '~/services/auth/auth.service'
 import { jwtDecode, type JwtPayload } from 'jwt-decode'
-
-interface User {
-  created_at: string | null
-  email: string
-  id: number
-  last_name: string | null
-  name: string | null
-  phone: string | null
-  profile_picture: string | null
-  updated_at: string | null
-  user_type_id: number
-  user_type: UserType
-}
-
-interface UserType {
-    id: number
-    name: string
-    deleted_at: string | null
-}
+import type { UserData } from '~/types/Auth'
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null)
-  const user = ref<User | null>(null)
+  const user = ref<UserData | null>(null)
 
   const isAuthenticated = computed(() => {
     if (!token.value) return false
@@ -34,16 +16,26 @@ export const useAuthStore = defineStore('auth', () => {
   const setLogin = async (params: { email: string; password: string }) => {
     try {
       const response = await login(params)
-      
+
       if (!response.access_token) throw new Error(response.message)
 
       token.value = response.access_token
-
-      setStoreLoggedUser(token.value)
+      setStoreLoggedUser(response.data.user, token.value)
 
       return response
     } catch (err) {
       throw err
+    }
+  }
+
+  const setLogout = async () => {
+    try {
+      const response = await logout()
+      return response
+    } catch (err) {
+      throw err
+    } finally {
+      clearAuth()
     }
   }
 
@@ -73,14 +65,8 @@ export const useAuthStore = defineStore('auth', () => {
     return { valid: true, expired: false }
   }
 
-  const setStoreLoggedUser = (token: string) => {
-    
-    const decoded = jwtDecode<User>(token)
-    user.value = decoded
-
-    
-    console.log('token', token);
-    console.log('decoded', decoded);
+  const setStoreLoggedUser = (userData: UserData, token: string) => {
+    user.value = userData
 
     localStorage.setItem('auth_token', token)
     localStorage.setItem('auth_user', JSON.stringify(user.value))
@@ -102,6 +88,7 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     isAuthenticated,
     setLogin,
+    setLogout,
     clearAuth,
     loadFromStorage,
     setStoreLoggedUser,

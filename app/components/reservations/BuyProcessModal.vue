@@ -1,6 +1,11 @@
 <template>
   <div>
-    <v-btn variant="outlined" color="primary" @click="isDialogOpen = true">
+    <v-btn
+      variant="outlined"
+      color="primary"
+      @click="isDialogOpen = true"
+      :disabled="props.disabled"
+    >
       Reservar
     </v-btn>
 
@@ -17,12 +22,14 @@
         <component
           :is="currentStepComponent"
           v-if="currentStepComponent"
+          ref="stepComponentRef"
           :reservation-data="props.reservationData"
         />
 
         <ReservationsBuyProcessFooter
           :steps="steps"
           @stopBuyProcess="stopBuyProcess()"
+          @nextStep="validateCurrentStep()"
           v-if="actualStep?.id !== 5"
         />
       </v-card>
@@ -38,9 +45,16 @@ import BuyProcessStepThree from './BuyProcessStepThree.vue'
 import BuyProcessStepFour from './BuyProcessStepFour.vue'
 import BuyProcessFinal from './BuyProcessFinal.vue'
 import type { BuyProcessModalProps } from '~/types/BuyProcessModal'
+import { createReserve } from '~/services/reservations/reservations.service'
+import type { CreateReservationRequest } from '~/types/RoomsServices'
 
 const props = defineProps<BuyProcessModalProps>()
+const { showToast } = useToast()
+const { handleAppLoading } = useUiStore()
+const { formatOnlyDate, formatDate } = useDateFormatter()
+const { user } = useAuthStore()
 const isDialogOpen = ref(false)
+const stepComponentRef = ref()
 
 const steps = ref<Steps[]>([
   { id: 1, isCompleted: true, isActual: true },
@@ -84,6 +98,89 @@ const resetSteps = () => {
 
 const stopBuyProcess = () => {
   closeProcessModal()
+}
+
+const validateCurrentStep = async () => {
+  const child = stepComponentRef.value
+
+  if (child?.validateStep) {
+    const ok = await child.validateStep()
+
+    if (!ok) return
+
+    nextStep()
+  } else {
+    handleFinishBuyProcess()
+  }
+}
+
+const nextStep = () => {
+  const currentIndex = steps.value.findIndex((step) => step.isActual)
+  if (currentIndex === -1 || currentIndex >= steps.value.length - 1) return
+
+  const currentStep = steps.value[currentIndex]
+  const nextStep = steps.value[currentIndex + 1]
+
+  if (!currentStep || !nextStep) return
+
+  currentStep.isActual = false
+  nextStep.isActual = true
+}
+
+const handleFinishBuyProcess = async () => {
+  const params: CreateReservationRequest = {
+    DESDE: formatOnlyDate(
+      props.availabilityCalendarData.dates?.start as string,
+    ),
+    HASTA: formatOnlyDate(props.availabilityCalendarData.dates?.end as string),
+    HAB: props.roomData.id,
+    CUANTOS: props.reservationData.guests.length.toString(),
+    PAX: `${props.reservationData.personalData.name} ${props.reservationData.personalData.lastName}`,
+    TELEFONO_CONTACTO: props.reservationData.personalData.phone,
+    EMAIL_CONTACTO: props.reservationData.personalData.email,
+    EMAIL_NOTIFICACIONES: props.reservationData.personalData.email,
+    VOL_ORDEN: undefined,
+    IMPORTE_COBRADO: props.roomData.price,
+    IMPORTE_ADICIONAL: undefined,
+    TRANSACCION_NRO: undefined,
+    FAC_A_CUIT: undefined,
+    FAC_A_RSOCIAL: undefined,
+    FAC_A_SFISCAL: undefined,
+    DNICUIT: props.reservationData.personalData.dni,
+    DNICUIT_TIPO: '1',
+    FECHA_NACIMIENTO: props.reservationData.personalData.birthDate,
+    ORIGEN_WEB: 'WEB AG',
+    PLATAFORMA_EXTERNA: undefined,
+    ORDEN_EXTERNA: undefined,
+    AG: `${user?.agency_code}`,
+    ARRIBO: formatDate(props.availabilityCalendarData.dates?.start as string),
+    TARJNUM: undefined,
+    TARJVTO: undefined,
+    TARJTIT: undefined,
+    TARJSEG: undefined,
+    RPAIS: props.reservationData.residencyData.country,
+    RCPOSTAL: props.reservationData.residencyData.postalCode,
+    RLOCALIDAD: props.reservationData.residencyData.locality,
+    RESTADO: undefined,
+    RDOMIC: props.reservationData.residencyData.address,
+    ROSBV: props.reservationData.residencyData.specialComments ?? '',
+    pasajeros: props.reservationData.guests.map((g) => ({
+      nationality_id: g.country,
+      birthday: g.birthDate,
+      document: g.dni,
+      name: g.name,
+    })),
+  }
+
+  try {
+    handleAppLoading(true)
+    const res = await createReserve(params)
+    showToast(res.message, 'success')
+  } catch (err: any) {
+    showToast(err, 'error')
+  } finally {
+    handleAppLoading(false)
+  }
 }
 </script>
 

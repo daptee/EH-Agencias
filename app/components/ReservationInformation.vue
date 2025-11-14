@@ -4,32 +4,38 @@
     <section class="mt-4 d-flex flex-column ga-2">
       <v-row class="ma-0">
         <span class="title-span">Fechas: </span>
-        <span class="value-span">17/08/2025 al 17/09/2025</span>
+        <span class="value-span">{{ props.dates }}</span>
       </v-row>
       <v-row class="ma-0">
         <span class="title-span">Personas: </span>
-        <span class="value-span">2</span>
+        <span class="value-span">{{ props.persons }}</span>
       </v-row>
       <v-row class="ma-0">
         <span class="title-span">N de habitación: </span>
-        <span class="value-span">2</span>
+        <span class="value-span">{{ props.room }}</span>
       </v-row>
       <v-row class="ma-0">
         <span class="title-span">Hora de llegada aprox: </span>
-        <span class="value-span">15hs</span>
+        <span class="value-span">{{ props.arrivalTime }}</span>
       </v-row>
       <v-row class="ma-0">
         <span class="title-span">Método de pago: </span>
-        <span class="value-span">Tarjeta de crédito</span>
+        <span class="value-span">{{ props.paymentMethod }}</span>
       </v-row>
 
       <v-row class="ma-0 row-price">
-        <span class="price-span">$321312</span>
+        <span class="price-span">{{ props.price }}</span>
         <span class="price-text-span">ARG</span>
       </v-row>
     </section>
   </v-card>
 </template>
+
+<script setup lang="ts">
+import type { ReservationInformationProps } from '~/types/ReservationInformation'
+
+const props = defineProps<ReservationInformationProps>()
+</script>
 
 <style scoped lang="scss">
 .row-price {
@@ -39,7 +45,7 @@
 }
 
 .price-text-span {
-  font-size: 18px;
+  font-size: 17px;
   margin-left: 5px;
 }
 </style>

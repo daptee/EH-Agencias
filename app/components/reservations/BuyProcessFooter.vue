@@ -15,8 +15,10 @@
       <span
         class="primary--text underline"
         :class="{ disabled: isNextDisabled }"
-        @click="!isNextDisabled && nextStep()"
-        >Siguiente</span
+        @click="!isNextDisabled && emit('nextStep')"
+        >{{
+          actualStep?.id === steps.length - 1 ? 'Finalizar' : 'Siguiente'
+        }}</span
       >
     </div>
   </section>
@@ -33,19 +35,6 @@ const emit = defineEmits<BuyProcessFooterEmits>()
 const actualStep = computed(() => props.steps.find((step) => step.isActual))
 const isNextDisabled = computed(() => !actualStep.value?.isCompleted)
 const isPrevDisabled = computed(() => actualStep.value?.id === 1)
-
-const nextStep = () => {
-  const currentIndex = props.steps.findIndex((step) => step.isActual)
-  if (currentIndex === -1 || currentIndex >= props.steps.length - 1) return
-
-  const currentStep = props.steps[currentIndex]
-  const nextStep = props.steps[currentIndex + 1]
-
-  if (!currentStep || !nextStep) return
-
-  currentStep.isActual = false
-  nextStep.isActual = true
-}
 
 const prevStep = () => {
   const currentIndex = props.steps.findIndex((step) => step.isActual)

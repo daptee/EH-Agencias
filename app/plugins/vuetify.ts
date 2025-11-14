@@ -21,6 +21,8 @@ import EH from '~/components/icons/EH.vue'
 import Minus from '~/components/icons/Minus.vue'
 import Plus from '~/components/icons/Plus.vue'
 import ArrowBackModal from '~/components/icons/ArrowBackModal.vue'
+import Daptee from '~/components/icons/Daptee.vue'
+import Contact from '~/components/icons/Contact.vue'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
@@ -47,6 +49,8 @@ export default defineNuxtPlugin((nuxtApp) => {
         minus: Minus,
         plus: Plus,
         arrow_back_modal: ArrowBackModal,
+        daptee: Daptee,
+        contact: Contact,
       },
       sets: { mdi },
     },

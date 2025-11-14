@@ -16,7 +16,9 @@
             @click:clear="deleteFilter"
           >
             <template #append-inner>
-              <v-icon color="ultraLightGrey" @click="provideTitle">$search</v-icon>
+              <v-icon color="ultraLightGrey" @click="provideTitle"
+                >$search</v-icon
+              >
             </template>
           </v-text-field>
         </v-col>
@@ -25,6 +27,7 @@
 
     <v-spacer />
 
+    <ToolkitContactModal />
     <v-btn color="transparent" elevation="0" @click.stop="logout">
       <v-icon class="ml-2" size="26">$exit</v-icon>
     </v-btn>
@@ -32,11 +35,22 @@
 </template>
 
 <script setup lang="ts">
+const auth = useAuthStore()
+const uiStore = useUiStore()
+const { handleAppLoading } = uiStore
 const searchData = ref<string>('')
 
 const provideTitle = () => console.log('headerSearch')
 const deleteFilter = () => (searchData.value = '')
-const logout = () => console.log('logout')
+const logout = async () => {
+  try {
+    handleAppLoading(true)
+    await auth.setLogout()
+  } finally {
+    navigateTo('/login')
+    handleAppLoading(false)
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -47,12 +61,5 @@ const logout = () => console.log('logout')
   .v-field__field {
     border-radius: 100px !important;
   }
-
-  // Cambiar color de fondo al hacer focus
-  &:focus-within .v-field__overlay {
-    background-color: #ff0000 !important; // o usa tu variable SCSS
-    opacity: 1 !important;
-  }
 }
-
 </style>

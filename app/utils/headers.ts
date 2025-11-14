@@ -30,25 +30,25 @@ export const MyReservationsHeaders = [
 export const availableRoomsHeaders = [
   {
     key: 'room',
-    title: 'HABITACION',
+    title: 'id',
     cellClass: 'fs-16 primary--text',
   },
   {
     key: 'capacity',
-    title: 'CAPACIDAD',
+    title: 'capacity',
     cellClass: 'fs-16 primary--text',
   },
   {
     key: 'price',
-    title: 'PRECIO',
+    title: 'price',
   },
   {
     key: 'servicios',
-    title: 'SERVICIOS',
+    title: 'services',
   },
   {
     key: 'info',
-    title: 'INFO',
+    title: 'info',
   },
   {
     key: 'reservar',

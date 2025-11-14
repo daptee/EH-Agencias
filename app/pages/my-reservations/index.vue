@@ -147,7 +147,11 @@
 
 <script setup lang="ts">
 import { fetchReservations } from '~/services/reservations/reservations.service'
-import type { Rerservation } from '~/types/Reservations'
+import type {
+  Reservation,
+  ReservationRequest,
+} from '~/types/ReservationsService'
+
 import { MyReservationsHeaders } from '~/utils/headers'
 
 definePageMeta({
@@ -159,11 +163,11 @@ definePageMeta({
 const uiStore = useUiStore()
 const { handleAppLoading } = uiStore
 const { showToast } = useToast()
+const { user } = useAuthStore()
 
-const items = ref<Rerservation[]>([])
+const items = ref<Reservation[]>([])
 const page = ref<number>(1)
 const lastPage = ref<number>(1)
-const icon = ref('mdi-calendar-clock')
 
 const increasePage = () => {
   if (page.value >= lastPage.value) return
@@ -182,7 +186,10 @@ const routeToDetail = (item: any, rowData: any) => {
 const getReservations = async () => {
   handleAppLoading(true)
   try {
-    const productResponse = await fetchReservations()
+    const params: ReservationRequest = {
+      agency_code: `${user?.agency_code}`,
+    }
+    const productResponse = await fetchReservations(params)
     items.value = productResponse
   } catch (err: any) {
     showToast(err, 'error')

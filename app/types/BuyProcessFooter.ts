@@ -10,4 +10,5 @@ export interface BuyProcessFooterProps {
 
 export interface BuyProcessFooterEmits {
   (e: 'stopBuyProcess'): void
+  (e: 'nextStep'): void
 }

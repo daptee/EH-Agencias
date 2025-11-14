@@ -3,7 +3,7 @@ import { useAuthStore } from '~/stores/auth'
 export default defineNuxtRouteMiddleware((to) => {
   const auth = useAuthStore()
 
-  if (!auth.user && localStorage.getItem('auth_user')) {
+  if (!auth.isAuthenticated && localStorage.getItem('auth_user')) {
     auth.user = JSON.parse(localStorage.getItem('auth_user')!)
     auth.token = localStorage.getItem('auth_token') || null
   }
@@ -16,5 +16,13 @@ export default defineNuxtRouteMiddleware((to) => {
   const guestRoutes = ['/login', '/register']
   if (guestRoutes.includes(to.path) && auth.token) {
     return navigateTo('/')
+  }
+
+  if (to.path === '/' && !auth.isAuthenticated) {
+    return navigateTo('/mis-reservas')
+  }
+
+  if (to.path === '/' && auth.isAuthenticated) {
+    return navigateTo('/mis-reservas')
   }
 })

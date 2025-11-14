@@ -11,7 +11,7 @@
       :error-messages="errors.email"
       required
       variant="underlined"
-      autocomplete="new-email"   
+      autocomplete="new-email"
     />
 
     <v-text-field
@@ -24,7 +24,7 @@
       :type="showPassword ? 'text' : 'password'"
       @click:append="showPassword = !showPassword"
       variant="underlined"
-      autocomplete="new-password"  
+      autocomplete="new-password"
     />
 
     <v-btn
@@ -41,11 +41,11 @@
   </form>
 </template>
 
-
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
+import { verifyAgency } from '~/services/auth/auth.service'
 
 const auth = useAuthStore()
 const isLoading = ref(false)
@@ -73,25 +73,37 @@ const { handleSubmit, defineField, errors } = useForm({
 const [email] = defineField('email')
 const [password] = defineField('password')
 
-
 const onSubmit = handleSubmit(async (values) => {
   const params = {
     email: values.email,
     password: values.password,
   }
 
+  isLoading.value = true
   try {
-    isLoading.value = true
     await auth.setLogin(params)
+
+    const currentUser = auth.user
+    if (!currentUser) {
+      await auth.setLogout()
+      throw new Error('Error al iniciar sesión')
+    }
+
+    const agency = await verifyAgency(currentUser.agency_code)
+
+    if (!agency || agency.ESTADO !== 'A') {
+      await auth.setLogout()
+      throw new Error('Agencia no autorizada')
+    }
+
     await navigateTo('/')
     showToast('Sesión iniciada correctamente', 'success')
-  } catch (error: any) {
-    showToast(error, 'error')
+  } catch (err: any) {
+    showToast(err.message || err, 'error')
   } finally {
     isLoading.value = false
   }
 })
-
 </script>
 
 <style lang="scss">

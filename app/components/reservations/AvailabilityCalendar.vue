@@ -4,12 +4,11 @@
       <div class="primary--text mb-4 title-section">
         Ingresá las fechas que deseas reservar para ver nuestra disponibilidad
       </div>
-
       <v-row>
         <v-col cols="12" md="8" align-self="center">
           <div class="calendar-section">
             <DatePicker
-              v-model="date"
+              v-model="props.availabilityCalendarData.dates"
               columns="2"
               color="purple"
               timezone="America/Argentina/Buenos_Aires"
@@ -52,7 +51,12 @@
             </div>
           </div>
 
-          <v-btn color="primary" elevation="0" class="mt-5">
+          <v-btn
+            color="primary"
+            elevation="0"
+            class="mt-5"
+            @click="emit('checkAvailability')"
+          >
             VER DISPONIBILIDAD
           </v-btn>
         </v-col>
@@ -63,12 +67,21 @@
 
 <script setup lang="ts">
 import { DatePicker } from 'v-calendar'
-import type { AvailabilityCalendarProps } from '~/types/AvailabilityCalendar'
+import type {
+  AvailabilityCalendarEmits,
+  AvailabilityCalendarProps,
+} from '~/types/AvailabilityCalendar'
 
 const props = defineProps<AvailabilityCalendarProps>()
-const date = ref(new Date())
+const emit = defineEmits<AvailabilityCalendarEmits>()
+
+const totalGuests = () =>
+  props.availabilityCalendarData.adults +
+  props.availabilityCalendarData.children
 
 const increase = (type: string) => {
+  if (totalGuests() >= 4) return
+
   if (type === 'children') {
     props.availabilityCalendarData.children++
   } else {

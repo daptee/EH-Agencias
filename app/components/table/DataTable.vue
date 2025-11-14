@@ -10,7 +10,7 @@
     :sort-desc="sortOptions.sortDesc"
     :search="search"
     class="elevation-0"
-    @click:row="canBeClicked ? rowClicked : null"
+    @click:row="rowClicked"
   >
     <template #top="{ pagination, options, updateOptions }">
       <!-- Here is the custom header of the table -->
@@ -30,7 +30,7 @@
     </template>
 
     <template #no-data>
-      <div class="text-center py-6">NO HAY DATOS DISPONIBLES</div>
+      <ToolkitNoData />
     </template>
   </v-data-table>
 </template>
@@ -124,6 +124,9 @@ const rowClicked = (item: any, rowData: any) => {
         }
       }
     }
+  }
+  .v-data-table-rows-no-data td {
+    padding: 0 !important;
   }
 }
 </style>
