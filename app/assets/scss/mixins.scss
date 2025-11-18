@@ -1,0 +1,16 @@
+@mixin backgroundTransparency($color, $opacity) {
+  background-color: rgba($color, $opacity);
+}
+@mixin fontStyle($weight, $size, $spacing, $color) {
+  font-weight: $weight;
+  font-size: $size;
+  letter-spacing: $spacing;
+  color: $color;
+}
+@mixin bgImg ($url, $position_x, $position_y, $size) {
+  background-image: url($url);
+  background-repeat: no-repeat;
+  background-position-x: $position_x;
+  background-position-y: $position_y;
+  background-size: $size;
+}
