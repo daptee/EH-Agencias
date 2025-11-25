@@ -3,9 +3,8 @@ import { useAuthStore } from '~/stores/auth'
 export default defineNuxtRouteMiddleware((to) => {
   const auth = useAuthStore()
 
-  if (!auth.isAuthenticated && localStorage.getItem('auth_user')) {
-    auth.user = JSON.parse(localStorage.getItem('auth_user')!)
-    auth.token = localStorage.getItem('auth_token') || null
+  if (!auth.isAuthenticated && localStorage.getItem('auth_user_eh_ag')) {
+    auth.loadFromStorage()
   }
 
   const protectedRoutes = ['/mis-reservas', '/reservas']

@@ -18,10 +18,6 @@
         <span class="title-span">Hora de llegada aprox: </span>
         <span class="value-span">{{ props.arrivalTime }}</span>
       </v-row>
-      <v-row class="ma-0">
-        <span class="title-span">Método de pago: </span>
-        <span class="value-span">{{ props.paymentMethod }}</span>
-      </v-row>
 
       <v-row class="ma-0 row-price">
         <span class="price-span">{{ props.price }}</span>
