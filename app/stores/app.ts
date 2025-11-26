@@ -5,6 +5,7 @@ export const useUiStore = defineStore('ui', () => {
   const isNavOpen = ref<boolean>(true)
   const isNavMini = ref<boolean>(false)
   const isAppLoading = ref<boolean>(false)
+  const searchData = ref<string>('')
 
   const handleNav = () => {
     isNavOpen.value = !isNavOpen.value
@@ -25,5 +26,6 @@ export const useUiStore = defineStore('ui', () => {
     handleNavMini,
     isAppLoading,
     handleAppLoading,
+    searchData,
   }
 })

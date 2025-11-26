@@ -7,15 +7,33 @@
             :items="items"
             :headers="MyReservationsHeaders"
             :quantityPerPage="items.length"
+            :search="searchData"
             @rowClicked="routeToDetail"
             mobile-breakpoint="960"
           >
             <template #tableToolbar="{}">
-              <div class="d-flex justify-space-between align-center pt-11 main">
-                <h3 class="primary--text pl-5 fs-16 fw-6 poppins">Reservas</h3>
+              <div
+                class="d-flex justify-space-between align-center pt-11 main pr-10"
+              >
+                <div class="d-flex flex-column pl-5">
+                  <h3 class="primary--text fs-16 fw-6 poppins">Reservas</h3>
+                  <AppApplyFilters :filters="filters" @remove="removeFilter" />
+                </div>
                 <!-- <div class="d-flex align-center justify-end px-5">
                   <ToolkitOrder />
                 </div> -->
+                <AppFilterDrawer
+                  :filters="filters"
+                  @apply="
+                    (newFilters) => {
+                      filters.fromDate = newFilters.fromDate
+                      filters.toDate = newFilters.toDate
+                      filters.room = newFilters.room
+                      filters.status = newFilters.status
+                      getReservations()
+                    }
+                  "
+                />
               </div>
             </template>
 
@@ -73,16 +91,6 @@
               </div>
             </template>
 
-            <template #CUANTOS="{ item }">
-              <div>
-                <Icon
-                  v-for="(icon, index) in parseInt(item.CUANTOS)"
-                  :key="index"
-                  iconName="mdi-account-outline"
-                  color="primary"
-                />
-              </div>
-            </template>
             <template v-slot:[`item.DESDE`]="{ item }">
               <span class="dryBrown--text">{{
                 item?.DESDE + ' - ' + item?.HASTA
@@ -125,6 +133,7 @@
 
 <script setup lang="ts">
 import { fetchReservations } from '~/services/reservations/reservations.service'
+import type { Filters } from '~/types/FilterDrawer'
 import type {
   Reservation,
   ReservationRequest,
@@ -142,10 +151,17 @@ const uiStore = useUiStore()
 const { handleAppLoading } = uiStore
 const { showToast } = useToast()
 const { user } = useAuthStore()
+const { searchData } = storeToRefs(uiStore)
 
 const items = ref<Reservation[]>([])
 const page = ref<number>(1)
 const lastPage = ref<number>(1)
+const filters = ref<Filters>({
+  fromDate: undefined,
+  toDate: undefined,
+  room: undefined,
+  status: undefined,
+})
 
 const increasePage = () => {
   if (page.value >= lastPage.value) return
@@ -157,6 +173,15 @@ const decreasePage = () => {
   page.value--
 }
 
+const removeFilter = (key: any) => {
+  filters.value = {
+    ...filters.value,
+    [key]: undefined,
+  }
+
+  getReservations()
+}
+
 const routeToDetail = (item: any, rowData: any) => {
   navigateTo(`/mis-reservas/${rowData.item.RESERVA}`)
 }
@@ -166,6 +191,10 @@ const getReservations = async () => {
   try {
     const params: ReservationRequest = {
       agency_code: `${user?.agency_code}`,
+      fromDate: filters.value.fromDate as string,
+      toDate: filters.value.toDate as string,
+      roomId: filters.value.room as string,
+      status: filters.value.status as string,
     }
     const productResponse = await fetchReservations(params)
     items.value = productResponse

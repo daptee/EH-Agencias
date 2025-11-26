@@ -19,6 +19,10 @@ export interface Reservation {
 
 export interface ReservationRequest {
   agency_code: string
+  fromDate?: string
+  toDate?: string
+  roomId?: string
+  status?: string
 }
 
 export interface ReservationDetail {

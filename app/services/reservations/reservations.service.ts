@@ -26,6 +26,10 @@ export const fetchReservations = async (
         },
         params: {
           AG: params.agency_code,
+          FECHAD: params.fromDate,
+          FECHAH: params.toDate,
+          HAB: params.roomId,
+          ESTADO: params.status,
         },
       },
     )

@@ -105,6 +105,15 @@ const updateDate = (date: Date) => {
 
 const { validate, setFieldValue } = useForm({
   validationSchema: BuyProcessStepOneSchema,
+  initialValues: {
+    firstName: props.reservationData.personalData.name,
+    lastName: props.reservationData.personalData.lastName,
+    birthdayDate: props.reservationData.personalData.birthDate,
+    phone: props.reservationData.personalData.phone,
+    dniType: props.reservationData.personalData.dniType,
+    dni: props.reservationData.personalData.dni,
+    email: props.reservationData.personalData.email,
+  },
 })
 
 const { value: firstName, errorMessage: firstNameError } = useField('firstName')
@@ -151,20 +160,6 @@ const getDocumentsTypesMethod = async () => {
 onMounted(() => {
   getDocumentsTypesMethod()
 })
-
-watch(
-  () => props.reservationData.personalData,
-  (newVal) => {
-    setFieldValue('firstName', newVal.name)
-    setFieldValue('lastName', newVal.lastName)
-    setFieldValue('birthdayDate', newVal.birthDate)
-    setFieldValue('phone', newVal.phone)
-    setFieldValue('dniType', newVal.dniType)
-    setFieldValue('dni', newVal.dni)
-    setFieldValue('email', newVal.email)
-  },
-  { deep: true, immediate: true },
-)
 
 defineExpose({ validateStep })
 </script>

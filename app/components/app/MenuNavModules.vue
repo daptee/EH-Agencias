@@ -1,6 +1,6 @@
 <template>
   <v-list nav flat class="px-3">
-    <v-list-item-group v-model="openGroups" mandatory color="primary">
+    <v-item-group v-model="openGroups" mandatory color="primary">
       <template v-for="(item, i) in items" :key="`module_${i}`">
         <v-list-group
           v-if="item.subItems && hasPermission(item)"
@@ -13,15 +13,15 @@
         >
           <template #activator>
             <v-list-item>
-              <v-list-item-content>
+              <div>
                 <v-list-item-title>{{ item.text }}</v-list-item-title>
-              </v-list-item-content>
+              </div>
 
-              <v-list-item-icon>
+              <div>
                 <v-icon size="32">{{
                   openGroups[i] ? 'mdi-chevron-up' : 'mdi-chevron-down'
                 }}</v-icon>
-              </v-list-item-icon>
+              </div>
             </v-list-item>
           </template>
 
@@ -32,13 +32,13 @@
             :class="isMiniOpen ? '' : 'bodycolor'"
             @click="goto(subItem.pathName)"
           >
-            <v-list-item-content>
+            <div>
               <v-list-item-title>{{ subItem.text }}</v-list-item-title>
-            </v-list-item-content>
+            </div>
 
-            <v-list-item-icon>
+            <div>
               <v-icon size="32">{{ subItem.arrow }}</v-icon>
-            </v-list-item-icon>
+            </div>
           </v-list-item>
         </v-list-group>
 
@@ -53,16 +53,16 @@
           ]"
           @click="goto(item.pathName)"
         >
-          <v-list-item-content>
+          <div>
             <v-list-item-title>{{ item.text }}</v-list-item-title>
-          </v-list-item-content>
+          </div>
 
-          <v-list-item-icon>
+          <div>
             <v-icon size="32">{{ item.arrow }}</v-icon>
-          </v-list-item-icon>
+          </div>
         </v-list-item>
       </template>
-    </v-list-item-group>
+    </v-item-group>
   </v-list>
 </template>
 
