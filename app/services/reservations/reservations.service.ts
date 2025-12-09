@@ -8,8 +8,11 @@ import type {
   AvailabilityResponse,
 } from '~/types/ReservationsService'
 import type {
+  CancelReserveParams,
+  ConfirmReserve,
   CreateReservationRequest,
   CreateReservationResponse,
+  InitReserveParams,
 } from '~/types/RoomsServices'
 
 export const fetchReservations = async (
@@ -136,5 +139,77 @@ export const createReserve = async (params: CreateReservationRequest) => {
     return res
   } catch (error: any) {
     throw error?.data?.message ?? 'Error al crear reserva'
+  }
+}
+
+export const initReserve = async (params: InitReserveParams) => {
+  try {
+    const config = useRuntimeConfig()
+    const res: any = await $fetch(
+      `${config.public.API_URL}/api/internal-api-eh/IniciaReserva`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+        },
+        body: params,
+      },
+    )
+
+    return res
+  } catch (error: any) {
+    throw error?.data?.message ?? 'Error al iniciar reserva'
+  }
+}
+
+export const cancelReserve = async (params: CancelReserveParams) => {
+  const response = ref<any>()
+  const auth = useAuthStore()
+  const token = auth.token
+
+  try {
+    const config = useRuntimeConfig()
+    const res: any = await $fetch(
+      `${config.public.API_URL}/api/internal-api-eh/CancelaReserva`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: params,
+      },
+    )
+
+    response.value = res
+    return res
+  } catch (error: any) {
+    throw error?.data?.message ?? 'Error al crear reserva'
+  }
+}
+
+export const confirmReserve = async (params: ConfirmReserve) => {
+  const response = ref<any>()
+  const auth = useAuthStore()
+  const token = auth.token
+
+  try {
+    const config = useRuntimeConfig()
+    const res: any = await $fetch(
+      `${config.public.API_URL}/api/internal-api-eh/ConfirmaReserva`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: params,
+      },
+    )
+
+    response.value = res
+    return res
+  } catch (error: any) {
+    throw error?.data?.message ?? 'Error al confirmar reserva'
   }
 }

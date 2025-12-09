@@ -55,3 +55,34 @@ export interface CreateReservationRequest {
 }
 
 export interface CreateReservationResponse {}
+
+export interface InitReserveParams {
+  DESDE: string
+  HASTA: string
+  HAB: string
+  CUANTOS: string
+  agency_user_id: string
+}
+export interface CancelReserveParams {
+  RSV: string
+}
+
+export interface ConfirmReserve {
+  RSV: string
+  PAX: string
+  TELEFONO_CONTACTO: string
+  EMAIL_CONTACTO: string
+  EMAIL_NOTIFICACIONES: string
+  VOL_ORDEN: string
+  IMPORTE_COBRADO: string
+  IMPORTE_ADICIONAL: string
+  TRANSACCION_NRO: string
+  FAC_A_CUIT: string
+  FAC_A_RSOCIAL: string
+  FAC_A_SFISCAL: string
+  DNICUIT: string
+  DNICUIT_TIPO: string
+  FECHA_NACIMIENTO: string
+  ORIGEN_WEB: string
+  agency_type: number
+}

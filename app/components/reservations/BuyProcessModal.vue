@@ -3,7 +3,7 @@
     <v-btn
       variant="outlined"
       color="primary"
-      @click="isDialogOpen = true"
+      @click="openReservationModal"
       :disabled="props.disabled"
     >
       Reservar
@@ -45,8 +45,16 @@ import BuyProcessStepThree from './BuyProcessStepThree.vue'
 import BuyProcessStepFour from './BuyProcessStepFour.vue'
 import BuyProcessFinal from './BuyProcessFinal.vue'
 import type { BuyProcessModalProps } from '~/types/BuyProcessModal'
-import { createReserve } from '~/services/reservations/reservations.service'
-import type { CreateReservationRequest } from '~/types/RoomsServices'
+import {
+  cancelReserve,
+  confirmReserve,
+  createReserve,
+  initReserve,
+} from '~/services/reservations/reservations.service'
+import type {
+  ConfirmReserve,
+  CreateReservationRequest,
+} from '~/types/RoomsServices'
 
 const props = defineProps<BuyProcessModalProps>()
 const { showToast } = useToast()
@@ -55,6 +63,7 @@ const { formatOnlyDate, formatDate } = useDateFormatter()
 const { user } = useAuthStore()
 const isDialogOpen = ref(false)
 const stepComponentRef = ref()
+const reservationNumber = ref(null)
 
 const steps = ref<Steps[]>([
   { id: 1, isCompleted: true, isActual: true },
@@ -96,8 +105,9 @@ const resetSteps = () => {
   })
 }
 
-const stopBuyProcess = () => {
+const stopBuyProcess = async () => {
   closeProcessModal()
+  await cancelReserve({ RSV: reservationNumber.value! })
 }
 
 const validateCurrentStep = async () => {
@@ -129,6 +139,27 @@ const nextStep = () => {
 
   currentStep.isActual = false
   nextStep.isActual = true
+}
+
+const openReservationModal = async () => {
+  isDialogOpen.value = true
+  try {
+    const params = {
+      DESDE: formatOnlyDate(
+        props.availabilityCalendarData.dates?.start as string,
+      ),
+      HASTA: formatOnlyDate(
+        props.availabilityCalendarData.dates?.end as string,
+      ),
+      HAB: props.roomData.id,
+      CUANTOS: props.reservationData.guests.length.toString(),
+      agency_user_id: user?.id.toString()!,
+    }
+    const res = await initReserve(params)
+    reservationNumber.value = res.RESERVA
+  } catch (error) {
+    console.log('error', error)
+  }
 }
 
 const handleFinishBuyProcess = async () => {
@@ -177,13 +208,35 @@ const handleFinishBuyProcess = async () => {
     })),
   }
 
+  const confirmParams: ConfirmReserve = {
+    RSV: reservationNumber.value!,
+    PAX: `${props.reservationData.personalData.name} ${props.reservationData.personalData.lastName}`,
+    TELEFONO_CONTACTO: props.reservationData.personalData.phone,
+    EMAIL_CONTACTO: props.reservationData.personalData.email,
+    EMAIL_NOTIFICACIONES: props.reservationData.personalData.email,
+    VOL_ORDEN: '',
+    IMPORTE_COBRADO: props.roomData.price,
+    IMPORTE_ADICIONAL: '',
+    TRANSACCION_NRO: '',
+    FAC_A_CUIT: '',
+    FAC_A_RSOCIAL: '',
+    FAC_A_SFISCAL: '',
+    DNICUIT: props.reservationData.personalData.dni,
+    DNICUIT_TIPO: '1',
+    FECHA_NACIMIENTO: props.reservationData.personalData.birthDate,
+    ORIGEN_WEB: 'WEB AG',
+    agency_type: 1,
+  }
+
   try {
     handleAppLoading(true)
-    const res = await createReserve(params)
+    await createReserve(params)
+    await confirmReserve(confirmParams)
     showToast('Reserva creada exitosamente', 'success')
     return true
   } catch (err: any) {
     showToast(err, 'error')
+    await cancelReserve({ RSV: reservationNumber.value! })
     return false
   } finally {
     handleAppLoading(false)
