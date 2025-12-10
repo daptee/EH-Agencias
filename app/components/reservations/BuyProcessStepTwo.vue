@@ -6,7 +6,21 @@
       :key="index"
     >
       <v-expansion-panel-title class="text-title-expansion px-8">
-        Pasajero {{ index + 1 }}
+        <span>Pasajero {{ index + 1 }}</span>
+        <template v-slot:actions>
+          <div class="d-flex align-center justify-space-between">
+            <v-btn
+              color="primary"
+              elevation="0"
+              size="small"
+              :disabled="isAlreadyAutomplete"
+              @click.stop="completePassenger(index)"
+            >
+              Autocompletar
+            </v-btn>
+            <v-icon icon="mdi-chevron-down"></v-icon>
+          </div>
+        </template>
       </v-expansion-panel-title>
       <v-expansion-panel-text class="expansion-content" v-if="fields[index]">
         <v-autocomplete
@@ -35,7 +49,7 @@
           :error-messages="fields[index].lastName.errorMessage.value"
         />
         <v-menu
-          v-model="menu"
+          v-model="menu[index]"
           :close-on-content-click="false"
           transition="scale-transition"
           offset-y
@@ -56,9 +70,9 @@
           </template>
 
           <v-date-picker
-            v-model="selectedDate"
+            v-model="selectedDate[index]"
             hide-header
-            @update:model-value="updateDate(selectedDate, index)"
+            @update:model-value="updateDate(selectedDate[index], index)"
             color="primary"
             show-adjacent-months
           />
@@ -85,12 +99,24 @@ const { handleAppLoading } = useUiStore()
 const { showToast } = useToast()
 const nationsItems = ref([])
 const expanded = ref<number[]>(props.reservationData.guests.map((_, i) => i))
+const isAlreadyAutomplete = ref<boolean>(false)
 
-const { validate, setFieldValue, errors } = useForm({
+const initialValues = {
+  guests: props.reservationData.guests.map((g) => ({
+    country: g.country,
+    name: g.name,
+    lastName: g.lastName,
+    birthDate: g.birthDate,
+    dni: g.dni,
+  })),
+}
+
+const { validate, setFieldValue, errors, values } = useForm({
   validationSchema: BuyProcessStepTwoSchema,
+  initialValues,
 })
 
-const fields = props.reservationData.guests.map((g, index) => ({
+const fields = values.guests.map((_, index) => ({
   country: useField(`guests.${index}.country`),
   name: useField(`guests.${index}.name`),
   lastName: useField(`guests.${index}.lastName`),
@@ -100,14 +126,19 @@ const fields = props.reservationData.guests.map((g, index) => ({
 
 const validateStep = async () => {
   const ok = await validate()
-
   if (!ok.valid) return false
+
+  values.guests.forEach((g, i) => {
+    props.reservationData.guests[i] = { ...g }
+  })
 
   return true
 }
 
-const menu = ref(false)
-const selectedDate = ref(new Date())
+const menu = ref<boolean[]>(props.reservationData.guests.map(() => false))
+const selectedDate = ref<Date[]>(
+  props.reservationData.guests.map(() => new Date()),
+)
 const updateDate = (date: Date, index: number) => {
   if (!fields[index]) return
 
@@ -117,47 +148,8 @@ const updateDate = (date: Date, index: number) => {
     year: 'numeric',
   })
 
-  menu.value = false
+  menu.value[index] = false
 }
-
-fields.forEach((f, index) => {
-  watch(f.country.value, (val) => {
-    if (!props.reservationData.guests[index]) return
-    props.reservationData.guests[index].country = val as string
-  })
-
-  watch(f.name.value, (val) => {
-    if (!props.reservationData.guests[index]) return
-    props.reservationData.guests[index].name = val as string
-  })
-  watch(f.lastName.value, (val) => {
-    if (!props.reservationData.guests[index]) return
-    props.reservationData.guests[index].lastName = val as string
-  })
-  watch(f.birthDate.value, (val) => {
-    if (!props.reservationData.guests[index]) return
-    props.reservationData.guests[index].birthDate = val as string
-  })
-  watch(f.dni.value, (val) => {
-    if (!props.reservationData.guests[index]) return
-    props.reservationData.guests[index].dni = val as string
-  })
-})
-
-watch(
-  () => props.reservationData.guests,
-  (newGuests) => {
-    newGuests.forEach((g, index) => {
-      if (!fields[index]) return
-      setFieldValue(`guests.${index}.country`, g.country)
-      setFieldValue(`guests.${index}.name`, g.name)
-      setFieldValue(`guests.${index}.lastName`, g.lastName)
-      setFieldValue(`guests.${index}.birthDate`, g.birthDate)
-      setFieldValue(`guests.${index}.dni`, g.dni)
-    })
-  },
-  { immediate: true, deep: true },
-)
 
 const getNationsMethod = async () => {
   try {
@@ -168,13 +160,27 @@ const getNationsMethod = async () => {
       nationsItems.value.push({
         label: nation.NACION_ESP,
         value: nation.ID,
-      })
+      } as never)
     })
   } catch (error: any) {
     showToast(error, 'error')
   } finally {
     handleAppLoading(false)
   }
+}
+
+const completePassenger = (index: number) => {
+  setFieldValue(`guests.${index}.name`, props.reservationData.personalData.name)
+  setFieldValue(
+    `guests.${index}.lastName`,
+    props.reservationData.personalData.lastName,
+  )
+  setFieldValue(
+    `guests.${index}.birthDate`,
+    props.reservationData.personalData.birthDate,
+  )
+  setFieldValue(`guests.${index}.dni`, props.reservationData.personalData.dni)
+  isAlreadyAutomplete.value = true
 }
 
 onMounted(() => {

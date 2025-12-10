@@ -8,7 +8,7 @@
     :items-per-page="quantityPerPage"
     :sort-by="sortOptions.sortBy"
     :sort-desc="sortOptions.sortDesc"
-    :search="search"
+    :search="props.search"
     class="elevation-0"
     @click:row="rowClicked"
   >
@@ -44,7 +44,7 @@ const props = withDefaults(defineProps<TableProps>(), {
   hideDefaultTableHeader: true,
   quantityPerPage: 30,
   sortOptions: () => ({
-    sortBy: '',
+    sortBy: [],
     sortDesc: false,
   }),
   search: '',

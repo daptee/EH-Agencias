@@ -38,7 +38,7 @@
 const auth = useAuthStore()
 const uiStore = useUiStore()
 const { handleAppLoading } = uiStore
-const searchData = ref<string>('')
+const { searchData } = storeToRefs(uiStore)
 
 const provideTitle = () => console.log('headerSearch')
 const deleteFilter = () => (searchData.value = '')

@@ -23,6 +23,7 @@ import Plus from '~/components/icons/Plus.vue'
 import ArrowBackModal from '~/components/icons/ArrowBackModal.vue'
 import Daptee from '~/components/icons/Daptee.vue'
 import Contact from '~/components/icons/Contact.vue'
+import Filters from '~/components/icons/Filters.vue'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
@@ -51,6 +52,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         arrow_back_modal: ArrowBackModal,
         daptee: Daptee,
         contact: Contact,
+        filters: Filters,
       },
       sets: { mdi },
     },

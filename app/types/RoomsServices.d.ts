@@ -54,4 +54,49 @@ export interface CreateReservationRequest {
   pasajeros: Pasajero[]
 }
 
-export interface CreateReservationResponse {}
+export interface CreateReservationResponse {
+  RESERVA: string
+  RESULT: string
+}
+
+export interface InitReserveParams {
+  reservation_number: string
+  agency_user_id: string
+}
+
+export interface InitReserveResponse {
+  message: string
+  reservation: {
+    agency_user_id: string | null
+    created_at: string | null
+    deleted_at: string | null
+    id: number
+    reservation_number: string
+    status: {
+      created_at: string | null
+      id: number
+      name: string
+      updated_at: string | null
+    }
+    status_id: number
+    updated_at: string | null
+  }
+}
+export interface CancelReserveParams {
+  reservation_number: string
+}
+
+export interface ConfirmReserve {
+  number_of_passengers: number
+  reservation_id: number
+  room_number: string
+  agency_type: number
+  user: {
+    check_in: string
+    check_out: string
+    email: string
+    last_name: string
+    name: string
+    phone: string
+  }
+}

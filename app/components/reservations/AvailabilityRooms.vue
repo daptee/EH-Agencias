@@ -81,7 +81,13 @@
         <template #info="{ item }">
           <div class="d-flex align-center ga-2">
             <v-icon size="13">$info</v-icon>
-            <span class="primary--text underline mr-2">Más info</span>
+            <a
+              :href="moreInfoLink"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="primary--text underline mr-2"
+              >Más info</a
+            >
           </div>
         </template>
 
@@ -102,9 +108,14 @@
 import type { AvailabilityRoomsProps } from '~/types/AvailabilityRooms'
 import { availableRoomsHeaders } from '~/utils/headers'
 
+const config = useRuntimeConfig()
 const { formatToDayMonth } = useDateFormatter()
 const { formatPrice } = usePriceFormatter()
 const props = defineProps<AvailabilityRoomsProps>()
+const moreInfoLink =
+  config.public.MODE === 'development'
+    ? 'https://dev.ehboutiqueexperience.com/habitaciones'
+    : 'https://ehboutiqueexperience.com/habitaciones'
 </script>
 
 <style scoped lang="scss">

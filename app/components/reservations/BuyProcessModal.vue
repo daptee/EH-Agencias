@@ -3,7 +3,7 @@
     <v-btn
       variant="outlined"
       color="primary"
-      @click="isDialogOpen = true"
+      @click="openReservationModal"
       :disabled="props.disabled"
     >
       Reservar
@@ -45,8 +45,16 @@ import BuyProcessStepThree from './BuyProcessStepThree.vue'
 import BuyProcessStepFour from './BuyProcessStepFour.vue'
 import BuyProcessFinal from './BuyProcessFinal.vue'
 import type { BuyProcessModalProps } from '~/types/BuyProcessModal'
-import { createReserve } from '~/services/reservations/reservations.service'
-import type { CreateReservationRequest } from '~/types/RoomsServices'
+import {
+  cancelReserve,
+  confirmReserve,
+  createReserve,
+  initReserve,
+} from '~/services/reservations/reservations.service'
+import type {
+  ConfirmReserve,
+  CreateReservationRequest,
+} from '~/types/RoomsServices'
 
 const props = defineProps<BuyProcessModalProps>()
 const { showToast } = useToast()
@@ -55,6 +63,7 @@ const { formatOnlyDate, formatDate } = useDateFormatter()
 const { user } = useAuthStore()
 const isDialogOpen = ref(false)
 const stepComponentRef = ref()
+const reservationNumber = ref('')
 
 const steps = ref<Steps[]>([
   { id: 1, isCompleted: true, isActual: true },
@@ -96,7 +105,7 @@ const resetSteps = () => {
   })
 }
 
-const stopBuyProcess = () => {
+const stopBuyProcess = async () => {
   closeProcessModal()
 }
 
@@ -129,6 +138,10 @@ const nextStep = () => {
 
   currentStep.isActual = false
   nextStep.isActual = true
+}
+
+const openReservationModal = async () => {
+  isDialogOpen.value = true
 }
 
 const handleFinishBuyProcess = async () => {
@@ -179,11 +192,39 @@ const handleFinishBuyProcess = async () => {
 
   try {
     handleAppLoading(true)
+
     const res = await createReserve(params)
+    reservationNumber.value = res.RESERVA
+    const initReserveRes = await initReserve({
+      reservation_number: reservationNumber.value!,
+      agency_user_id: user?.id.toString()!,
+    })
+
+    const confirmParams: ConfirmReserve = {
+      number_of_passengers: props.reservationData.guests.length,
+      reservation_id: initReserveRes.reservation.id,
+      room_number: props.roomData.id,
+      agency_type: 1,
+      user: {
+        check_in: formatDate(
+          props.availabilityCalendarData.dates?.start as string,
+        ),
+        check_out: formatDate(
+          props.availabilityCalendarData.dates?.end as string,
+        ),
+        email: props.reservationData.personalData.email,
+        last_name: props.reservationData.personalData.lastName,
+        name: props.reservationData.personalData.name,
+        phone: props.reservationData.personalData.phone,
+      },
+    }
+
+    await confirmReserve(confirmParams)
     showToast('Reserva creada exitosamente', 'success')
     return true
   } catch (err: any) {
     showToast(err, 'error')
+    await cancelReserve({ reservation_number: reservationNumber.value! })
     return false
   } finally {
     handleAppLoading(false)

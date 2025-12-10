@@ -8,8 +8,12 @@ import type {
   AvailabilityResponse,
 } from '~/types/ReservationsService'
 import type {
+  CancelReserveParams,
+  ConfirmReserve,
   CreateReservationRequest,
   CreateReservationResponse,
+  InitReserveParams,
+  InitReserveResponse,
 } from '~/types/RoomsServices'
 
 export const fetchReservations = async (
@@ -26,6 +30,10 @@ export const fetchReservations = async (
         },
         params: {
           AG: params.agency_code,
+          FECHAD: params.fromDate,
+          FECHAH: params.toDate,
+          HAB: params.roomId,
+          ESTADO: params.status,
         },
       },
     )
@@ -110,6 +118,50 @@ export const getAvailability = async (
 }
 
 export const createReserve = async (params: CreateReservationRequest) => {
+  const auth = useAuthStore()
+  const token = auth.token
+
+  try {
+    const config = useRuntimeConfig()
+    const res: CreateReservationResponse = await $fetch(
+      `${config.public.API_URL}/api/internal-api-eh/CreaReservaAgencias`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: params,
+      },
+    )
+
+    return res
+  } catch (error: any) {
+    throw error?.data?.message ?? 'Error al crear reserva'
+  }
+}
+
+export const initReserve = async (params: InitReserveParams) => {
+  try {
+    const config = useRuntimeConfig()
+    const res: InitReserveResponse = await $fetch(
+      `${config.public.API_URL}/api/reservations`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+        },
+        body: params,
+      },
+    )
+
+    return res
+  } catch (error: any) {
+    throw error?.data?.message ?? 'Error al iniciar reserva'
+  }
+}
+
+export const cancelReserve = async (params: CancelReserveParams) => {
   const response = ref<any>()
   const auth = useAuthStore()
   const token = auth.token
@@ -117,7 +169,7 @@ export const createReserve = async (params: CreateReservationRequest) => {
   try {
     const config = useRuntimeConfig()
     const res: any = await $fetch(
-      `${config.public.API_URL}/api/internal-api-eh/CreaReservaAgencias`,
+      `${config.public.API_URL}/api/reservations/cancel`,
       {
         method: 'POST',
         headers: {
@@ -131,6 +183,32 @@ export const createReserve = async (params: CreateReservationRequest) => {
     response.value = res
     return res
   } catch (error: any) {
-    throw error?.data?.message ?? 'Error al crear reserva'
+    throw error?.data?.message ?? 'Error al cancelar reserva'
+  }
+}
+
+export const confirmReserve = async (params: ConfirmReserve) => {
+  const response = ref<any>()
+  const auth = useAuthStore()
+  const token = auth.token
+
+  try {
+    const config = useRuntimeConfig()
+    const res: any = await $fetch(
+      `${config.public.API_URL}/api/reservations/confirm`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: params,
+      },
+    )
+
+    response.value = res
+    return res
+  } catch (error: any) {
+    throw error?.data?.message ?? 'Error al confirmar reserva'
   }
 }

@@ -42,13 +42,13 @@ export const useAuthStore = defineStore('auth', () => {
   const clearAuth = () => {
     token.value = null
     user.value = null
-    localStorage.removeItem('auth_token')
-    localStorage.removeItem('auth_user')
+    localStorage.removeItem('auth_token_eh_ag')
+    localStorage.removeItem('auth_user_eh_ag')
   }
 
   const loadFromStorage = (): { valid: boolean; expired: boolean } => {
-    const storedToken = localStorage.getItem('auth_token')
-    const storedUser = localStorage.getItem('auth_user')
+    const storedToken = localStorage.getItem('auth_token_eh_ag')
+    const storedUser = localStorage.getItem('auth_user_eh_ag')
 
     if (!storedToken) {
       clearAuth()
@@ -68,8 +68,8 @@ export const useAuthStore = defineStore('auth', () => {
   const setStoreLoggedUser = (userData: UserData, token: string) => {
     user.value = userData
 
-    localStorage.setItem('auth_token', token)
-    localStorage.setItem('auth_user', JSON.stringify(user.value))
+    localStorage.setItem('auth_token_eh_ag', token)
+    localStorage.setItem('auth_user_eh_ag', JSON.stringify(user.value))
   }
 
   const isTokenExpired = (token: string): boolean => {
