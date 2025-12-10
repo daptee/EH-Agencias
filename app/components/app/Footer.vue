@@ -12,7 +12,7 @@
           <v-icon size="12" class="mb-1">$daptee</v-icon>
         </a>
       </span>
-      <span class="ml-2">v 1<b>.</b>0<b>.</b>1 {{ envMode }}</span>
+      <span class="ml-2">v 1<b>.</b>0<b>.</b>2 {{ envMode }}</span>
     </p>
   </footer>
 </template>

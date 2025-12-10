@@ -63,7 +63,7 @@ const { formatOnlyDate, formatDate } = useDateFormatter()
 const { user } = useAuthStore()
 const isDialogOpen = ref(false)
 const stepComponentRef = ref()
-const reservationNumber = ref(null)
+const reservationNumber = ref('')
 
 const steps = ref<Steps[]>([
   { id: 1, isCompleted: true, isActual: true },
@@ -107,7 +107,6 @@ const resetSteps = () => {
 
 const stopBuyProcess = async () => {
   closeProcessModal()
-  await cancelReserve({ RSV: reservationNumber.value! })
 }
 
 const validateCurrentStep = async () => {
@@ -143,23 +142,6 @@ const nextStep = () => {
 
 const openReservationModal = async () => {
   isDialogOpen.value = true
-  try {
-    const params = {
-      DESDE: formatOnlyDate(
-        props.availabilityCalendarData.dates?.start as string,
-      ),
-      HASTA: formatOnlyDate(
-        props.availabilityCalendarData.dates?.end as string,
-      ),
-      HAB: props.roomData.id,
-      CUANTOS: props.reservationData.guests.length.toString(),
-      agency_user_id: user?.id.toString()!,
-    }
-    const res = await initReserve(params)
-    reservationNumber.value = res.RESERVA
-  } catch (error) {
-    console.log('error', error)
-  }
 }
 
 const handleFinishBuyProcess = async () => {
@@ -208,35 +190,41 @@ const handleFinishBuyProcess = async () => {
     })),
   }
 
-  const confirmParams: ConfirmReserve = {
-    RSV: reservationNumber.value!,
-    PAX: `${props.reservationData.personalData.name} ${props.reservationData.personalData.lastName}`,
-    TELEFONO_CONTACTO: props.reservationData.personalData.phone,
-    EMAIL_CONTACTO: props.reservationData.personalData.email,
-    EMAIL_NOTIFICACIONES: props.reservationData.personalData.email,
-    VOL_ORDEN: '',
-    IMPORTE_COBRADO: props.roomData.price,
-    IMPORTE_ADICIONAL: '',
-    TRANSACCION_NRO: '',
-    FAC_A_CUIT: '',
-    FAC_A_RSOCIAL: '',
-    FAC_A_SFISCAL: '',
-    DNICUIT: props.reservationData.personalData.dni,
-    DNICUIT_TIPO: '1',
-    FECHA_NACIMIENTO: props.reservationData.personalData.birthDate,
-    ORIGEN_WEB: 'WEB AG',
-    agency_type: 1,
-  }
-
   try {
     handleAppLoading(true)
-    await createReserve(params)
+
+    const res = await createReserve(params)
+    reservationNumber.value = res.RESERVA
+    const initReserveRes = await initReserve({
+      reservation_number: reservationNumber.value!,
+      agency_user_id: user?.id.toString()!,
+    })
+
+    const confirmParams: ConfirmReserve = {
+      number_of_passengers: props.reservationData.guests.length,
+      reservation_id: initReserveRes.reservation.id,
+      room_number: props.roomData.id,
+      agency_type: 1,
+      user: {
+        check_in: formatDate(
+          props.availabilityCalendarData.dates?.start as string,
+        ),
+        check_out: formatDate(
+          props.availabilityCalendarData.dates?.end as string,
+        ),
+        email: props.reservationData.personalData.email,
+        last_name: props.reservationData.personalData.lastName,
+        name: props.reservationData.personalData.name,
+        phone: props.reservationData.personalData.phone,
+      },
+    }
+
     await confirmReserve(confirmParams)
     showToast('Reserva creada exitosamente', 'success')
     return true
   } catch (err: any) {
     showToast(err, 'error')
-    await cancelReserve({ RSV: reservationNumber.value! })
+    await cancelReserve({ reservation_number: reservationNumber.value! })
     return false
   } finally {
     handleAppLoading(false)

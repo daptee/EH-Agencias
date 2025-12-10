@@ -13,6 +13,7 @@ import type {
   CreateReservationRequest,
   CreateReservationResponse,
   InitReserveParams,
+  InitReserveResponse,
 } from '~/types/RoomsServices'
 
 export const fetchReservations = async (
@@ -117,13 +118,12 @@ export const getAvailability = async (
 }
 
 export const createReserve = async (params: CreateReservationRequest) => {
-  const response = ref<any>()
   const auth = useAuthStore()
   const token = auth.token
 
   try {
     const config = useRuntimeConfig()
-    const res: any = await $fetch(
+    const res: CreateReservationResponse = await $fetch(
       `${config.public.API_URL}/api/internal-api-eh/CreaReservaAgencias`,
       {
         method: 'POST',
@@ -135,7 +135,6 @@ export const createReserve = async (params: CreateReservationRequest) => {
       },
     )
 
-    response.value = res
     return res
   } catch (error: any) {
     throw error?.data?.message ?? 'Error al crear reserva'
@@ -145,8 +144,8 @@ export const createReserve = async (params: CreateReservationRequest) => {
 export const initReserve = async (params: InitReserveParams) => {
   try {
     const config = useRuntimeConfig()
-    const res: any = await $fetch(
-      `${config.public.API_URL}/api/internal-api-eh/IniciaReserva`,
+    const res: InitReserveResponse = await $fetch(
+      `${config.public.API_URL}/api/reservations`,
       {
         method: 'POST',
         headers: {
@@ -170,7 +169,7 @@ export const cancelReserve = async (params: CancelReserveParams) => {
   try {
     const config = useRuntimeConfig()
     const res: any = await $fetch(
-      `${config.public.API_URL}/api/internal-api-eh/CancelaReserva`,
+      `${config.public.API_URL}/api/reservations/cancel`,
       {
         method: 'POST',
         headers: {
@@ -184,7 +183,7 @@ export const cancelReserve = async (params: CancelReserveParams) => {
     response.value = res
     return res
   } catch (error: any) {
-    throw error?.data?.message ?? 'Error al crear reserva'
+    throw error?.data?.message ?? 'Error al cancelar reserva'
   }
 }
 
@@ -196,7 +195,7 @@ export const confirmReserve = async (params: ConfirmReserve) => {
   try {
     const config = useRuntimeConfig()
     const res: any = await $fetch(
-      `${config.public.API_URL}/api/internal-api-eh/ConfirmaReserva`,
+      `${config.public.API_URL}/api/reservations/confirm`,
       {
         method: 'POST',
         headers: {
